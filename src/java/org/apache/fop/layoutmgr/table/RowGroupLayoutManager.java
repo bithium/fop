@@ -94,11 +94,8 @@ class RowGroupLayoutManager {
     private void createElementsForRowGroup(LayoutContext context, int alignment,
             int bodyType, LinkedList returnList) {
         log.debug("Handling row group with " + rowGroup.length + " rows...");
-        EffRow row;
-        for (int rgi = 0; rgi < rowGroup.length; rgi++) {
-            row = rowGroup[rgi];
-            for (Iterator iter = row.getGridUnits().iterator(); iter.hasNext();) {
-                GridUnit gu = (GridUnit) iter.next();
+        for (EffRow row : rowGroup) {
+            for (GridUnit gu : row.getGridUnits()) {
                 if (gu.isPrimary()) {
                     PrimaryGridUnit primary = gu.getPrimary();
                     // TODO a new LM must be created for every new static-content
@@ -112,13 +109,13 @@ class RowGroupLayoutManager {
                         spanWidth += ((TableColumn) colIter.next()).getColumnWidth().getValue(
                                 tableLM);
                     }
-                    LayoutContext childLC = LayoutContext.newInstance();
+                    LayoutContext childLC = LayoutContext.offspringOf(context);
                     childLC.setStackLimitBP(context.getStackLimitBP()); //necessary?
                     childLC.setRefIPD(spanWidth);
 
                     //Get the element list for the cell contents
                     List elems = primary.getCellLM().getNextKnuthElements(
-                                            childLC, alignment);
+                            childLC, alignment);
                     ElementListObserver.observe(elems, "table-cell", primary.getCell().getId());
                     primary.setElements(elems);
                 }
@@ -155,8 +152,7 @@ class RowGroupLayoutManager {
                 rowHeights[rgi] = rowBPD.toMinOptMax(tableLM);
                 explicitRowHeight = rowBPD.toMinOptMax(tableLM);
             }
-            for (Iterator iter = row.getGridUnits().iterator(); iter.hasNext();) {
-                GridUnit gu = (GridUnit) iter.next();
+            for (GridUnit gu : row.getGridUnits()) {
                 if (!gu.isEmpty() && gu.getColSpanIndex() == 0 && gu.isLastGridUnitRowSpan()) {
                     PrimaryGridUnit primary = gu.getPrimary();
                     int effectiveCellBPD = 0;
