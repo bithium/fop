@@ -1,0 +1,3 @@
+*.patch
+build/
+fop-util
